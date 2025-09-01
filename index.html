@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Panel Ejecutivo Coltefinanciera — Inflación & Inventario | Dashboard
+      Financiero
+    </title>
+    <meta
+      name="description"
+      content="Panel ejecutivo de Coltefinanciera para monitoreo de inflación e inventario. Dashboard profesional con métricas IPC, proyecciones y análisis financiero en tiempo real."
+    />
+    <meta
+      name="keywords"
+      content="Coltefinanciera, panel ejecutivo, inflación, inventario, IPC, dashboard financiero, métricas"
+    />
+    <meta name="author" content="Coltefinanciera" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Panel Ejecutivo Coltefinanciera — Inflación & Inventario"
+    />
+    <meta
+      property="og:description"
+      content="Dashboard profesional para monitoreo de inflación e inventario con métricas IPC y análisis financiero."
+    />
+    <meta property="og:image" content="./logo colte.png" />
+    <meta property="og:url" content="" />
+    <meta property="og:site_name" content="Coltefinanciera" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Panel Ejecutivo Coltefinanciera" />
+    <meta
+      name="twitter:description"
+      content="Dashboard profesional para monitoreo de inflación e inventario"
+    />
+    <meta name="twitter:image" content="./logo colte.png" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="" />
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome para iconos -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Favicon optimizado -->
+    <link rel="icon" type="image/x-icon" href="./logo.ico" />
+    <link rel="apple-touch-icon" href="./logo colte.png" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="logo-section">
+        <div class="company-logo">
+          <img
+            src="./logo colte.png"
+            alt="Coltefinanciera - Entidad Financiera Líder"
+            class="logo-img"
+            width="200"
+            height="50"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+        <div class="title">
+          <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+          <h1>Panel Ejecutivo de Inflación & Inventario</h1>
+        </div>
+      </div>
+      <div class="meta">
+        <span id="lastUpdate" aria-label="Última actualización">
+          <i class="fas fa-clock" aria-hidden="true"></i>
+          <span id="lastUpdateText"></span>
+        </span>
+        <button
+          id="btnExport"
+          class="btn"
+          aria-label="Exportar datos a archivo CSV"
+          title="Descargar datos en formato CSV"
+        >
+          <i class="fas fa-download" aria-hidden="true"></i>
+          Exportar CSV
+        </button>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card kpis">
+        <div class="kpi">
+          <div class="kpi-header">
+            <i class="fas fa-chart-area kpi-icon" aria-hidden="true"></i>
+            <h4>IPC Actual</h4>
+          </div>
+          <div class="kpi-value" id="kpiIpc">--</div>
+          <small>
+            <i class="fas fa-info-circle" aria-hidden="true"></i>
+            Índice base 2020=100
+          </small>
+        </div>
+        <div class="kpi">
+          <div class="kpi-header">
+            <i class="fas fa-bullseye kpi-icon" aria-hidden="true"></i>
+            <h4>Meta anual</h4>
+          </div>
+          <div class="kpi-value" id="kpiMeta">4.0%</div>
+          <small>
+            <i class="fas fa-target" aria-hidden="true"></i>
+            Objetivo
+          </small>
+        </div>
+        <div class="kpi">
+          <div class="kpi-header">
+            <i class="fas fa-crystal-ball kpi-icon" aria-hidden="true"></i>
+            <h4>Proyección próximo mes</h4>
+          </div>
+          <div class="kpi-value" id="kpiProy">--</div>
+          <small>
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            Estimación
+          </small>
+        </div>
+        <div class="kpi">
+          <div class="kpi-header">
+            <i class="fas fa-warehouse kpi-icon" aria-hidden="true"></i>
+            <h4>Valor total inventario</h4>
+          </div>
+          <div class="kpi-value" id="kpiInventario">--</div>
+          <small>
+            <i class="fas fa-coins" aria-hidden="true"></i>
+            Suma de valor
+          </small>
+        </div>
+      </section>
+
+      <section class="card chart">
+        <h3>
+          <i class="fas fa-chart-line"></i>
+          Tasa de inflación general
+        </h3>
+        <canvas id="chartInflacion"></canvas>
+      </section>
+
+      <section class="card chart">
+        <h3>
+          <i class="fas fa-chart-pie"></i>
+          Estado de inventario
+        </h3>
+        <canvas id="chartInventario"></canvas>
+      </section>
+
+      <section class="card table">
+        <div class="table-header">
+          <h3>
+            <i class="fas fa-boxes"></i>
+            Inventario
+          </h3>
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              id="search"
+              class="search"
+              placeholder="Buscar productos..."
+            />
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th data-column="id" data-type="text" class="sortable">
+                  <i class="fas fa-barcode"></i>
+                  ID <span class="sort-icon">↕️</span>
+                </th>
+                <th data-column="nombre" data-type="text" class="sortable">
+                  <i class="fas fa-tag"></i>
+                  Nombre <span class="sort-icon">↕️</span>
+                </th>
+                <th data-column="precio" data-type="number" class="sortable">
+                  <i class="fas fa-dollar-sign"></i>
+                  Precio <span class="sort-icon">↕️</span>
+                </th>
+                <th data-column="stock" data-type="number" class="sortable">
+                  <i class="fas fa-cubes"></i>
+                  Stock <span class="sort-icon">↕️</span>
+                </th>
+                <th data-column="valor" data-type="number" class="sortable">
+                  <i class="fas fa-calculator"></i>
+                  Valor <span class="sort-icon">↕️</span>
+                </th>
+                <th
+                  data-column="nivel_reorden"
+                  data-type="number"
+                  class="sortable"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  Nivel reorden <span class="sort-icon">↕️</span>
+                </th>
+                <th data-column="lead_time" data-type="number" class="sortable">
+                  <i class="fas fa-clock"></i>
+                  Lead time (d) <span class="sort-icon">↕️</span>
+                </th>
+                <th data-column="pedido" data-type="text" class="sortable">
+                  <i class="fas fa-shopping-cart"></i>
+                  Pedido <span class="sort-icon">↕️</span>
+                </th>
+                <th
+                  data-column="descontinuado"
+                  data-type="boolean"
+                  class="sortable"
+                >
+                  <i class="fas fa-ban"></i>
+                  Descontinuado <span class="sort-icon">↕️</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <span>
+          <i class="fas fa-code"></i>
+          Desarrollado por <strong>Jhon Dayron</strong>
+        </span>
+        <span class="separator">•</span>
+        <span>
+          <i class="fas fa-robot"></i>
+          Asistido por <strong>GitHub Copilot</strong>
+        </span>
+        <span class="separator">•</span>
+        <span>
+          <i class="fas fa-calendar-alt"></i>
+          © 2025
+        </span>
+      </div>
+    </footer>
+
+    <script>
+      // Datos globales del panel
+      window.__DATA__ = {
+        items: [
+          {
+            reorden: 1,
+            id: "IN0001",
+            nombre: "Artículo 1",
+            descripcion: "Desc 1",
+            precio: 51,
+            stock: 25,
+            valor: 1275,
+            nivel_reorden: 29,
+            lead_time: 13,
+            cant_pedido: 50,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0002",
+            nombre: "Artículo 2",
+            descripcion: "Desc 2",
+            precio: 93,
+            stock: 132,
+            valor: 12276,
+            nivel_reorden: 231,
+            lead_time: 4,
+            cant_pedido: 500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0003",
+            nombre: "Artículo 3",
+            descripcion: "Desc 3",
+            precio: 57,
+            stock: 151,
+            valor: 8607,
+            nivel_reorden: 114,
+            lead_time: 11,
+            cant_pedido: 1500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0004",
+            nombre: "Artículo 4",
+            descripcion: "Desc 4",
+            precio: 19,
+            stock: 186,
+            valor: 3534,
+            nivel_reorden: 158,
+            lead_time: 6,
+            cant_pedido: 500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0005",
+            nombre: "Artículo 5",
+            descripcion: "Desc 5",
+            precio: 75,
+            stock: 62,
+            valor: 4650,
+            nivel_reorden: 39,
+            lead_time: 12,
+            cant_pedido: 50,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0006",
+            nombre: "Artículo 6",
+            descripcion: "Desc 6",
+            precio: 11,
+            stock: 5,
+            valor: 55,
+            nivel_reorden: 9,
+            lead_time: 13,
+            cant_pedido: 1500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0007",
+            nombre: "Artículo 7",
+            descripcion: "Desc 7",
+            precio: 56,
+            stock: 58,
+            valor: 3248,
+            nivel_reorden: 109,
+            lead_time: 7,
+            cant_pedido: 100,
+            descontinuado: true,
+          },
+          {
+            reorden: 1,
+            id: "IN0008",
+            nombre: "Artículo 8",
+            descripcion: "Desc 8",
+            precio: 38,
+            stock: 101,
+            valor: 3838,
+            nivel_reorden: 162,
+            lead_time: 3,
+            cant_pedido: 1000,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0009",
+            nombre: "Artículo 9",
+            descripcion: "Desc 9",
+            precio: 59,
+            stock: 122,
+            valor: 7198,
+            nivel_reorden: 82,
+            lead_time: 3,
+            cant_pedido: 150,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0010",
+            nombre: "Artículo 10",
+            descripcion: "Desc 10",
+            precio: 50,
+            stock: 175,
+            valor: 8750,
+            nivel_reorden: 283,
+            lead_time: 8,
+            cant_pedido: 150,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0011",
+            nombre: "Artículo 11",
+            descripcion: "Desc 11",
+            precio: 59,
+            stock: 176,
+            valor: 10384,
+            nivel_reorden: 229,
+            lead_time: 1,
+            cant_pedido: 100,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0012",
+            nombre: "Artículo 12",
+            descripcion: "Desc 12",
+            precio: 18,
+            stock: 22,
+            valor: 396,
+            nivel_reorden: 36,
+            lead_time: 12,
+            cant_pedido: 50,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0013",
+            nombre: "Artículo 13",
+            descripcion: "Desc 13",
+            precio: 26,
+            stock: 72,
+            valor: 1872,
+            nivel_reorden: 102,
+            lead_time: 9,
+            cant_pedido: 100,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0014",
+            nombre: "Artículo 14",
+            descripcion: "Desc 14",
+            precio: 42,
+            stock: 62,
+            valor: 2604,
+            nivel_reorden: 83,
+            lead_time: 2,
+            cant_pedido: 1000,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0015",
+            nombre: "Artículo 15",
+            descripcion: "Desc 15",
+            precio: 32,
+            stock: 46,
+            valor: 1472,
+            nivel_reorden: 23,
+            lead_time: 15,
+            cant_pedido: 50,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0016",
+            nombre: "Artículo 16",
+            descripcion: "Desc 16",
+            precio: 90,
+            stock: 96,
+            valor: 8640,
+            nivel_reorden: 180,
+            lead_time: 3,
+            cant_pedido: 500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0017",
+            nombre: "Artículo 17",
+            descripcion: "Desc 17",
+            precio: 97,
+            stock: 57,
+            valor: 5529,
+            nivel_reorden: 98,
+            lead_time: 12,
+            cant_pedido: 50,
+            descontinuado: true,
+          },
+          {
+            reorden: 1,
+            id: "IN0018",
+            nombre: "Artículo 18",
+            descripcion: "Desc 18",
+            precio: 12,
+            stock: 6,
+            valor: 72,
+            nivel_reorden: 7,
+            lead_time: 13,
+            cant_pedido: 50,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0019",
+            nombre: "Artículo 19",
+            descripcion: "Desc 19",
+            precio: 82,
+            stock: 143,
+            valor: 11726,
+            nivel_reorden: 164,
+            lead_time: 12,
+            cant_pedido: 1500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0020",
+            nombre: "Artículo 20",
+            descripcion: "Desc 20",
+            precio: 16,
+            stock: 124,
+            valor: 1984,
+            nivel_reorden: 113,
+            lead_time: 14,
+            cant_pedido: 500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0021",
+            nombre: "Artículo 21",
+            descripcion: "Desc 21",
+            precio: 19,
+            stock: 112,
+            valor: 2128,
+            nivel_reorden: 75,
+            lead_time: 11,
+            cant_pedido: 500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0022",
+            nombre: "Artículo 22",
+            descripcion: "Desc 22",
+            precio: 24,
+            stock: 182,
+            valor: 4368,
+            nivel_reorden: 132,
+            lead_time: 15,
+            cant_pedido: 1500,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0023",
+            nombre: "Artículo 23",
+            descripcion: "Desc 23",
+            precio: 29,
+            stock: 106,
+            valor: 3074,
+            nivel_reorden: 142,
+            lead_time: 1,
+            cant_pedido: 150,
+            descontinuado: true,
+          },
+          {
+            reorden: 1,
+            id: "IN0024",
+            nombre: "Artículo 24",
+            descripcion: "Desc 24",
+            precio: 75,
+            stock: 173,
+            valor: 12975,
+            nivel_reorden: 127,
+            lead_time: 9,
+            cant_pedido: 1000,
+            descontinuado: false,
+          },
+          {
+            reorden: 1,
+            id: "IN0025",
+            nombre: "Artículo 25",
+            descripcion: "Desc 25",
+            precio: 14,
+            stock: 28,
+            valor: 392,
+            nivel_reorden: 21,
+            lead_time: 8,
+            cant_pedido: 50,
+            descontinuado: false,
+          },
+        ],
+        inflation: [
+          0.32, 0.41, 0.55, 0.38, 0.62, 0.44, 0.71, 0.59, 0.35, 0.49, 0.52,
+          0.47,
+        ],
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

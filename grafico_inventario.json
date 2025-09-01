@@ -1,0 +1,10 @@
+{
+  "categorias": ["Electrónicos", "Alimentos", "Ropa", "Hogar", "Deportes"],
+  "valores": [30456, 22143, 18924, 24512, 21421],
+  "colores": ["#22d3ee", "#22c55e", "#eab308", "#ef4444", "#8b5cf6"],
+  "meta": {
+    "tipo": "doughnut",
+    "titulo": "Distribución de Inventario por Categoría",
+    "total_inventario": 117456
+  }
+}
