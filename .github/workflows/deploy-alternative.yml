@@ -1,0 +1,79 @@
+name: Deploy to GitHub Pages (Alternative)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Create simple build
+        run: |
+          mkdir -p dist
+          cp *.html dist/ 2>/dev/null || true
+          cp *.css dist/ 2>/dev/null || true
+          cp *.js dist/ 2>/dev/null || true
+          cp *.json dist/ 2>/dev/null || true
+          cp *.png dist/ 2>/dev/null || true
+          cp *.ico dist/ 2>/dev/null || true
+
+          # Create a simple index.html if none exists
+          if [ ! -f dist/index.html ]; then
+            cat > dist/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="es">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Panel Ejecutivo Coltefinanciera</title>
+              <style>
+                  body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; background: #f0f0f0; }
+                  .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                  .success { color: #22c55e; font-size: 1.5rem; margin-bottom: 1rem; }
+                  .btn { display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; margin: 0.5rem; }
+                  .btn:hover { background: #2563eb; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <div class="success">✅ GitHub Pages está funcionando</div>
+                  <h1>Panel Ejecutivo Coltefinanciera</h1>
+                  <p>Dashboard Profesional de Inflación & Inventario</p>
+                  <div>
+                      <a href="./test.html" class="btn">Página de Prueba</a>
+                      <a href="./welcome.html" class="btn">Página de Bienvenida</a>
+                      <a href="https://github.com/JhonLaurens/Panel-Ejecutivo" class="btn">Ver Código</a>
+                  </div>
+                  <p style="margin-top: 2rem; color: #666;">
+                      🛠️ Desarrollado por Jhon Dayron • 🤖 Asistido por GitHub Copilot
+                  </p>
+              </div>
+          </body>
+          </html>
+          EOF
+          fi
+
+          echo "Files in dist:"
+          ls -la dist/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          force_orphan: true
