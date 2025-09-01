@@ -2,6 +2,10 @@
 
 Un dashboard profesional desarrollado con HTML, CSS y JavaScript vanilla para monitoreo de datos financieros e inventario en tiempo real.
 
+## 🌐 Demo en Vivo
+
+🔗 **[Ver Demo en GitHub Pages](https://jhonlaurens.github.io/Panel-Ejecutivo/)**
+
 ![Panel Preview](https://via.placeholder.com/800x400/0f172a/22d3ee?text=Panel+Ejecutivo+Coltefinanciera)
 
 ## 🎯 Propósito del Proyecto

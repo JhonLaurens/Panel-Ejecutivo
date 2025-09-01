@@ -1,0 +1,56 @@
+# GitHub Pages Configuration
+
+# Site settings
+title: "Panel Ejecutivo Coltefinanciera"
+description: "Dashboard profesional para monitoreo de inflación e inventario con métricas IPC y análisis financiero en tiempo real"
+baseurl: "/Panel-Ejecutivo"
+url: "https://jhonlaurens.github.io"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - .gitignore
+  - README.md
+  - CONTRIBUTING.md
+  - LICENSE
+  - .vscode/
+  - node_modules/
+  - .git/
+  - .github/
+
+# Include specific files
+include:
+  - .htaccess
+  - _pages
+
+# SEO settings
+author: "Jhon Dayron Laurens"
+twitter:
+  username: JhonLaurens
+  card: summary_large_image
+
+social:
+  name: Jhon Dayron Laurens
+  links:
+    - https://github.com/JhonLaurens
+
+# Google Analytics (opcional)
+# google_analytics: UA-XXXXXXXX-X
+
+# Default front matter
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
