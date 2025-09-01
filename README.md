@@ -6,6 +6,12 @@ Un dashboard profesional desarrollado con HTML, CSS y JavaScript vanilla para mo
 
 🔗 **[Ver Demo en GitHub Pages](https://jhonlaurens.github.io/Panel-Ejecutivo/)**
 
+> 📌 **Para habilitar GitHub Pages:**
+>
+> 1. Ve a **Settings** → **Pages** en tu repositorio de GitHub
+> 2. En **Source**, selecciona **"GitHub Actions"**
+> 3. El sitio se desplegará automáticamente en cada push
+
 ![Panel Preview](https://via.placeholder.com/800x400/0f172a/22d3ee?text=Panel+Ejecutivo+Coltefinanciera)
 
 ## 🎯 Propósito del Proyecto
