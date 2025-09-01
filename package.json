@@ -1,0 +1,67 @@
+{
+  "name": "panel-ejecutivo-coltefinanciera",
+  "version": "2.0.0",
+  "description": "Dashboard profesional para monitoreo de inflación e inventario",
+  "type": "module",
+  "main": "src/js/main.js",
+  "scripts": {
+    "dev": "npx live-server --port=3000 --host=localhost",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "npm run concat:css && npm run minify:css",
+    "build:js": "npm run concat:js && npm run minify:js",
+    "concat:css": "concat-cli -f src/css/variables.css src/css/components.css src/css/main.css -o dist/styles.min.css",
+    "concat:js": "concat-cli -f src/js/utils/*.js src/js/modules/*.js src/js/main.js -o dist/app.min.js",
+    "minify:css": "cleancss -o dist/styles.min.css dist/styles.min.css",
+    "minify:js": "terser dist/app.min.js -o dist/app.min.js -c -m",
+    "lint": "eslint src/js/**/*.js",
+    "lint:fix": "eslint src/js/**/*.js --fix",
+    "format": "prettier --write src/**/*.{js,css,html}",
+    "test": "echo 'No tests specified'",
+    "serve": "npx http-server . -p 8080 -c-1",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "keywords": [
+    "dashboard",
+    "finance",
+    "inflation",
+    "inventory",
+    "charts",
+    "javascript",
+    "html5",
+    "css3"
+  ],
+  "author": {
+    "name": "Jhon Dayron Laurens",
+    "email": "jhon@example.com",
+    "url": "https://github.com/JhonLaurens"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JhonLaurens/Panel-Ejecutivo.git"
+  },
+  "homepage": "https://jhonlaurens.github.io/Panel-Ejecutivo/",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "live-server": "^1.2.2",
+    "http-server": "^14.0.0",
+    "concat-cli": "^4.0.1",
+    "clean-css-cli": "^5.6.0",
+    "terser": "^5.0.0",
+    "gh-pages": "^6.0.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

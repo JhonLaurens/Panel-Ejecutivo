@@ -28,9 +28,9 @@
       property="og:description"
       content="Dashboard profesional para monitoreo de inflación e inventario con métricas IPC y análisis financiero."
     />
-    <meta property="og:image" content="./logo colte.png" />
-    <meta property="og:url" content="" />
-    <meta property="og:site_name" content="Coltefinanciera" />
+    <meta property="og:image" content="./src/assets/images/logo-colte.png" />
+    <meta property="og:url" content="https://jhonlaurens.github.io/Panel-Ejecutivo/" />
+    <meta property="og:site_name" content="Panel Ejecutivo Coltefinanciera" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -39,12 +39,19 @@
       name="twitter:description"
       content="Dashboard profesional para monitoreo de inflación e inventario"
     />
-    <meta name="twitter:image" content="./logo colte.png" />
+    <meta name="twitter:image" content="./src/assets/images/logo-colte.png" />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="" />
+    <link rel="canonical" href="https://jhonlaurens.github.io/Panel-Ejecutivo/" />
 
-    <link rel="stylesheet" href="styles.css" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./src/assets/images/favicon.ico" />
+    <link rel="apple-touch-icon" href="./src/assets/images/logo-colte.png" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/css/variables.css" />
+    <link rel="stylesheet" href="src/css/components.css" />
+    <link rel="stylesheet" href="src/css/main.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -65,13 +72,12 @@
       <div class="logo-section">
         <div class="company-logo">
           <img
-            src="./logo colte.png"
+            src="./src/assets/images/logo-colte.png"
             alt="Coltefinanciera - Entidad Financiera Líder"
             class="logo-img"
             width="200"
             height="50"
             loading="eager"
-            fetchpriority="high"
           />
         </div>
         <div class="title">
@@ -587,6 +593,6 @@
       };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="src/js/main.js"></script>
   </body>
 </html>
