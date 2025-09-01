@@ -1,6 +1,30 @@
+// @ts-check
 // =======================
-// Configuración y datos
-const inflationSeries = window.__DATA__.inflation || [
+// Type declarations for global objects
+/**
+ * @typedef {Object} InventoryItem
+ * @property {number} reorden
+ * @property {string} id
+ * @property {string} nombre
+ * @property {string} descripcion
+ * @property {number} precio
+ * @property {number} stock
+ * @property {number} valor
+ * @property {number} nivel_reorden
+ * @property {number} lead_time
+ * @property {number} cant_pedido
+ * @property {boolean} descontinuado
+ */
+
+/**
+ * @typedef {Object} GlobalData
+ * @property {InventoryItem[]} items
+ * @property {number[]} inflation
+ */
+
+// =======================
+// Configuration and data
+const inflationSeries = (window.__DATA__ && window.__DATA__.inflation) || [
   0.32, 0.41, 0.55, 0.38, 0.62, 0.44, 0.71, 0.59, 0.35, 0.49, 0.52, 0.47,
 ];
 const months = [
@@ -17,10 +41,10 @@ const months = [
   "Nov",
   "Dic",
 ];
-const items = window.__DATA__.items || [];
+const items = (window.__DATA__ && window.__DATA__.items) || [];
 
 // =======================
-// Utilidades
+// Utilities
 const fmtMoney = (v) =>
   v.toLocaleString("es-CO", {
     style: "currency",
@@ -35,47 +59,52 @@ const todayStr = new Date().toLocaleDateString("es-CO", {
 });
 const lastUpdateElement = document.getElementById("lastUpdateText");
 if (lastUpdateElement) {
-  lastUpdateElement.textContent = `Última actualización: ${todayStr}`;
+  lastUpdateElement.textContent = `Last update: ${todayStr}`;
 }
 
-// KPIs de inventario
+// Inventory KPIs
 const totalValor = items.reduce(
   (a, i) => a + (Number(i.valor) || i.precio * i.stock),
   0
 );
-const bajoStock = items.filter((i) => i.stock < i.nivel_reorden).length;
-const descontinuados = items.filter((i) => i.descontinuado).length;
+const lowStock = items.filter((i) => i.stock < i.nivel_reorden).length;
+const discontinued = items.filter((i) => i.descontinuado).length;
 
-document.getElementById("kpiInventario").textContent = fmtMoney(totalValor);
+const inventoryElement = document.getElementById("kpiInventario");
+if (inventoryElement) {
+  inventoryElement.textContent = fmtMoney(totalValor);
+}
 
-// Derivar índice IPC base 100 a partir de inflación mensual (encadenado)
+// Derive IPC index base 100 from monthly inflation rate (chained)
 let ipc = 100;
-const ipcSerie = [ipc];
+const ipcSeries = [ipc];
 for (const m of inflationSeries) {
   ipc *= 1 + m / 100;
-  ipcSerie.push(ipc);
+  ipcSeries.push(ipc);
 }
 const ipcActual = +ipc.toFixed(1);
-const proxMes = +(
+const nextMonth = +(
   ipc *
   (1 + (inflationSeries[inflationSeries.length - 1] || 0) / 100)
 ).toFixed(1);
 
-document.getElementById("kpiIpc").textContent = ipcActual;
-document.getElementById("kpiProy").textContent = proxMes;
+const ipcElement = document.getElementById("kpiIpc");
+const projElement = document.getElementById("kpiProy");
+if (ipcElement) ipcElement.textContent = String(ipcActual);
+if (projElement) projElement.textContent = String(nextMonth);
 
 // =======================
-// Gráfico 1: Inflación general (línea)
+// Chart 1: General inflation (line)
 const ctx1 = document.getElementById("chartInflacion");
-if (ctx1) {
-  new Chart(ctx1, {
+if (ctx1 && typeof window.Chart !== 'undefined') {
+  new window.Chart(ctx1, {
     type: "line",
     data: {
       labels: months.slice(0, inflationSeries.length + 1),
       datasets: [
         {
-          label: "Índice de Precios (IPC)",
-          data: ipcSerie,
+          label: "Price Index (CPI)",
+          data: ipcSeries,
           borderColor: "#22d3ee",
           backgroundColor: "rgba(34,211,238,.12)",
           tension: 0.3,
@@ -85,8 +114,8 @@ if (ctx1) {
           pointBorderWidth: 2,
         },
         {
-          label: "Meta anual (4%)",
-          data: Array(ipcSerie.length).fill(100 * 1.04),
+          label: "Annual target (4%)",
+          data: Array(ipcSeries.length).fill(100 * 1.04),
           borderDash: [6, 6],
           borderColor: "#22c55e",
           fill: false,
@@ -132,17 +161,17 @@ if (ctx1) {
 }
 
 // =======================
-// Gráfico 2: Estado de inventario (rosca)
-const activos = items.length - descontinuados;
-const rosca = document.getElementById("chartInventario");
-if (rosca) {
-  new Chart(rosca, {
+// Chart 2: Inventory status (doughnut)
+const activeItems = items.length - discontinued;
+const doughnutChart = document.getElementById("chartInventario");
+if (doughnutChart && typeof window.Chart !== 'undefined') {
+  new window.Chart(doughnutChart, {
     type: "doughnut",
     data: {
-      labels: ["Activos", "Descontinuados", "Bajo stock"],
+      labels: ["Active", "Discontinued", "Low stock"],
       datasets: [
         {
-          data: [activos, descontinuados, bajoStock],
+          data: [activeItems, discontinued, lowStock],
           backgroundColor: ["#22c55e", "#ef4444", "#eab308"],
           borderColor: ["#134e4a", "#7f1d1d", "#713f12"],
           borderWidth: 2,
@@ -185,13 +214,13 @@ if (rosca) {
 }
 
 // =======================
-// Variables para ordenamiento y filtrado
+// Variables for sorting and filtering
 let currentSortColumn = null;
 let currentSortDirection = "asc";
 let filteredItems = [...items];
 
 // =======================
-// Tabla
+// Table
 const tbody = document.querySelector("#tbl tbody");
 const renderRow = (i) => {
   const tr = document.createElement("tr");
@@ -205,9 +234,9 @@ const renderRow = (i) => {
     <td>${fmtNum(i.nivel_reorden)}</td>
     <td>${fmtNum(i.lead_time)}</td>
     <td><span class="badge ${warn ? "warn" : "ok"}">${
-    warn ? "Reordenar" : "OK"
+    warn ? "Reorder" : "OK"
   }</span></td>
-    <td>${i.descontinuado ? "Sí" : "No"}</td>`;
+    <td>${i.descontinuado ? "Yes" : "No"}</td>`;
   return tr;
 };
 
@@ -219,16 +248,16 @@ const renderTable = (rows) => {
 };
 
 // =======================
-// Funciones de ordenamiento
+// Sorting functions
 const sortData = (column, type, direction) => {
   return filteredItems.sort((a, b) => {
     let valueA, valueB;
 
-    // Obtener valores según el tipo de columna
+    // Get values according to column type
     switch (column) {
       case "pedido":
-        valueA = a.stock < a.nivel_reorden ? "Reordenar" : "OK";
-        valueB = b.stock < b.nivel_reorden ? "Reordenar" : "OK";
+        valueA = a.stock < a.nivel_reorden ? "Reorder" : "OK";
+        valueB = b.stock < b.nivel_reorden ? "Reorder" : "OK";
         break;
       case "valor":
         valueA = Number(a.valor) || a.precio * a.stock;
@@ -239,7 +268,7 @@ const sortData = (column, type, direction) => {
         valueB = b[column];
     }
 
-    // Convertir según tipo de dato
+    // Convert according to data type
     if (type === "number") {
       valueA = Number(valueA) || 0;
       valueB = Number(valueB) || 0;
@@ -251,7 +280,7 @@ const sortData = (column, type, direction) => {
       valueB = String(valueB).toLowerCase();
     }
 
-    // Comparar valores
+    // Compare values
     let result = 0;
     if (valueA < valueB) result = -1;
     else if (valueA > valueB) result = 1;
@@ -261,12 +290,12 @@ const sortData = (column, type, direction) => {
 };
 
 const updateSortIcons = (activeColumn, direction) => {
-  // Limpiar todos los iconos
+  // Clear all icons
   document.querySelectorAll(".sortable").forEach((th) => {
     th.classList.remove("asc", "desc");
   });
 
-  // Agregar clase al encabezado activo
+  // Add class to active header
   if (activeColumn) {
     const activeHeader = document.querySelector(
       `[data-column="${activeColumn}"]`
@@ -278,13 +307,13 @@ const updateSortIcons = (activeColumn, direction) => {
 };
 
 // =======================
-// Event listeners para encabezados
+// Event listeners for headers
 document.querySelectorAll(".sortable").forEach((header) => {
   header.addEventListener("click", () => {
     const column = header.getAttribute("data-column");
     const type = header.getAttribute("data-type");
 
-    // Determinar dirección de ordenamiento
+    // Determine sort direction
     if (currentSortColumn === column) {
       currentSortDirection = currentSortDirection === "asc" ? "desc" : "asc";
     } else {
@@ -293,7 +322,7 @@ document.querySelectorAll(".sortable").forEach((header) => {
 
     currentSortColumn = column;
 
-    // Ordenar y renderizar
+    // Sort and render
     const sortedData = sortData(column, type, currentSortDirection);
     renderTable(sortedData);
     updateSortIcons(column, currentSortDirection);
@@ -304,24 +333,24 @@ renderTable(filteredItems);
 
 function toCSV(rows) {
   const headers = [
-    "Volver a pedir",
+    "Reorder",
     "ID",
-    "Nombre",
-    "Descripcion",
-    "Precio",
+    "Name",
+    "Description",
+    "Price",
     "Stock",
-    "Valor",
-    "Nivel reorden",
+    "Value",
+    "Reorder level",
     "Lead time",
-    "Cant pedido",
-    "Descontinuado",
+    "Order quantity",
+    "Discontinued",
   ];
 
-  // Función para escapar valores CSV
+  // Function to escape CSV values
   const escapeCSV = (value) => {
     if (value === null || value === undefined) return "";
     const str = String(value);
-    // Si contiene punto y coma, comillas o saltos de línea, envolver en comillas
+    // If contains semicolon, quotes or line breaks, wrap in quotes
     if (str.includes(";") || str.includes('"') || str.includes("\n")) {
       return '"' + str.replace(/"/g, '""') + '"';
     }
@@ -342,7 +371,7 @@ function toCSV(rows) {
       r.nivel_reorden || "",
       r.lead_time || "",
       r.cant_pedido || "",
-      r.descontinuado ? "Si" : "No",
+      r.descontinuado ? "Yes" : "No",
     ];
     lines.push(row.map(escapeCSV).join(";"));
   }
@@ -350,14 +379,15 @@ function toCSV(rows) {
   return lines.join("\n");
 }
 
-// Filtro simple
+// Simple filter
 const input = document.getElementById("search");
 if (input) {
   input.addEventListener("input", (e) => {
-    if (e.target) {
-      const q = e.target.value.toLowerCase();
+    const target = e.target;
+    if (target && 'value' in target) {
+      const q = String(target.value).toLowerCase();
 
-      // Filtrar items
+      // Filter items
       filteredItems = items.filter(
         (i) =>
           i.id.toLowerCase().includes(q) ||
@@ -365,7 +395,7 @@ if (input) {
           i.descripcion.toLowerCase().includes(q)
       );
 
-      // Aplicar ordenamiento actual si existe
+      // Apply current sorting if exists
       if (currentSortColumn) {
         const activeHeader = document.querySelector(
           `[data-column="${currentSortColumn}"]`
@@ -385,13 +415,13 @@ if (input) {
   });
 }
 
-// Exportar CSV
+// Export CSV
 const btnExport = document.getElementById("btnExport");
 if (btnExport) {
   btnExport.addEventListener("click", () => {
     const csv = toCSV(filteredItems);
 
-    // Agregar BOM para UTF-8 para asegurar codificación correcta
+    // Add BOM for UTF-8 to ensure correct encoding
     const BOM = "\uFEFF";
     const csvWithBOM = BOM + csv;
 
@@ -402,7 +432,7 @@ if (btnExport) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "inventario_" + new Date().toISOString().slice(0, 10) + ".csv";
+    a.download = "inventory_" + new Date().toISOString().slice(0, 10) + ".csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
