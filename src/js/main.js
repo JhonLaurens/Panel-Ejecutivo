@@ -4,9 +4,9 @@
  * @module app
  */
 
-import { formatCurrency, formatPercentage, formatDate } from './utils/formatters.js';
 import { createInflationChart, createInventoryChart, processInventoryData } from './modules/charts.js';
 import { DataTable } from './modules/table.js';
+import { formatCurrency, formatDate, formatPercentage } from './utils/formatters.js';
 
 /**
  * Configuración global de la aplicación
